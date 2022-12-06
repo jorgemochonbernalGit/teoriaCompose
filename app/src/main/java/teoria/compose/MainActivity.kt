@@ -3,22 +3,21 @@ package teoria.compose
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import teoria.compose.ui.theme.TeoriaTheme
@@ -40,10 +39,10 @@ class MainActivity : ComponentActivity() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        MyEstado1(counterMas) { counterMas = it }
-                        MyEstado2(counterMenos) { counterMenos = it }
+                        //MyEstado1(counterMas) { counterMas = it }
+                        //MyEstado2(counterMenos) { counterMenos = it }
+                        Switch()
                     }
-
                 }
             }
         }
@@ -187,6 +186,152 @@ fun MyEstado2(n: Int, onValueChange: (Int) -> Unit) {
         Text(text = "Mailo")
     }
     Text(text = "Pulsado: ${n}")
+}
+
+@Composable
+fun textField1() {
+    var text2 by remember { mutableStateOf("") }
+    TextField(
+        value = text2,
+        onValueChange = {
+            text2 = if (it.contains("coco")) {
+                it.replace("coco", "Mailo")
+            } else {
+                it
+            }
+        },
+        label = { Text(text = "Introduce tu nombre") })
+}
+
+@Composable
+fun button1() {
+    var enabled by rememberSaveable { mutableStateOf(true) }
+    Column() {
+        Modifier
+            .fillMaxSize()
+            .padding(24.dp)
+    }
+    Button(
+        onClick = { enabled = false },
+        enabled = enabled,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Color.Magenta,
+            contentColor = Color.Blue
+        ),
+        border = BorderStroke(5.dp, Color.Red)
+    ) {
+        Text(text = "Boton")
+    }
+
+    OutlinedButton(
+        onClick = { enabled = false },
+        enabled = enabled,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Color.Magenta,
+            contentColor = Color.Blue
+        )
+    ) {
+        Text(text = "Boton")
+    }
+}
+
+@Composable
+fun textFieldOutlined1() {
+    var text2 by remember { mutableStateOf("") }
+    OutlinedTextField(
+        value = text2,
+        onValueChange = { text2 = it },
+        label = { Text(text = "Hola") },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color.Magenta,
+            unfocusedBorderColor = Color.Blue
+        )
+    )
+}
+
+@Composable
+fun imagen1() {
+    Image(
+        painter = painterResource(id = R.drawable.coco),
+        contentDescription = "coco",
+        alpha = 0.5f,
+        modifier = Modifier
+            .clip(CircleShape)
+            .border(5.dp, Color.Red, CircleShape)
+        //Modifier.clip(RoundedCornerShape(25.dp))
+    )
+}
+
+//https://fonts.google.com/icons
+@Composable
+fun icon() {
+    Icon(
+        imageVector = Icons.Rounded.Star,
+        contentDescription = "Estrella",
+        tint = Color.Red
+    )
+}
+
+@Composable
+fun ProgressBar1() {
+    var showLoading by rememberSaveable { mutableStateOf(false) }
+    Column() {
+        if (showLoading) {
+            CircularProgressIndicator(color = Color.Red, strokeWidth = 10.dp)
+            LinearProgressIndicator(
+                modifier = Modifier.padding(10.dp),
+                color = Color.Red,
+                backgroundColor = Color.Yellow
+            )
+        }
+
+        Button(onClick = { showLoading = !showLoading }) {
+            Text(text = "pulsa")
+        }
+    }
+}
+
+@Composable
+fun ProgressBar2() {
+    var progressStatus by rememberSaveable { mutableStateOf(0f) }
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CircularProgressIndicator(progressStatus)
+        Row(modifier = Modifier.fillMaxSize()) {
+            Button(onClick = { progressStatus += 0.1f }) {
+                Text(text = "Incrementar")
+            }
+            Button(onClick = { progressStatus -= 0.1f }) {
+                Text(text = "Decrementar")
+            }
+        }
+    }
+}
+
+@Composable
+fun Switch() {
+    var state by rememberSaveable { mutableStateOf(true) }
+    Switch(
+        checked = state,
+        onCheckedChange = { state = !state },
+        enabled = true,
+        colors = SwitchDefaults.colors(
+            //true
+            uncheckedThumbColor = Color.Red,
+            uncheckedTrackColor = Color.Magenta,
+            uncheckedTrackAlpha = 0.3f,
+            checkedThumbColor = Color.Green,
+            checkedTrackColor = Color.Cyan,
+            checkedTrackAlpha = 0.5f,
+
+            //false
+            disabledCheckedThumbColor = Color.Yellow,
+            disabledUncheckedThumbColor = Color.Yellow
+        )
+    )
 }
 
 @Preview(showBackground = true)
