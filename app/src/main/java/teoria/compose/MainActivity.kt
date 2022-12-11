@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -18,35 +19,218 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import teoria.compose.ui.theme.TeoriaTheme
+import kotlin.math.exp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             TeoriaTheme {
+                //var selected by remember { mutableStateOf("Ejemplo 1") }
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    var counterMas by rememberSaveable { mutableStateOf(value = 0) }
-                    var counterMenos by rememberSaveable { mutableStateOf(value = 0) }
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                    //var counterMas by rememberSaveable { mutableStateOf(value = 0) }
+                    //var counterMenos by rememberSaveable { mutableStateOf(value = 0) }
+                    //val getOptions = getOptions(titles = listOf("Coco", "Mailo"))
+                    Column() {
                         //MyEstado1(counterMas) { counterMas = it }
                         //MyEstado2(counterMenos) { counterMenos = it }
-                        Switch()
+                        //getOptions.forEach {
+                        //  MyCheckBoxWithText1(it)
+                        //}
+                        //MyListRadioButton(selected) { selected = it }
+                        MyRangeSlider()
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+fun MyDropDownMenu() {
+    var selectedText by remember { mutableStateOf("") }
+    var expaned by remember { mutableStateOf(false) }
+    var deserts = listOf("Vainilla", "Cafe", "Fruta")
+    Column(modifier = Modifier.padding(20.dp)) {
+        OutlinedTextField(
+            value = selectedText,
+            onValueChange = { selectedText = it },
+            enabled = false,
+            readOnly = true,
+            modifier = Modifier
+                .clickable { expaned = true }
+                .fillMaxWidth()
+        )
+        DropdownMenu(
+            expanded = expaned,
+            onDismissRequest = { expaned = false },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            deserts.forEach { d ->
+                DropdownMenuItem(onClick = {
+                    expaned = false
+                    selectedText = d
+                }) {
+                    Text(text = d)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun LineaVerticalHorizontal() {
+    Divider(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp), color = Color.Red
+    )
+}
+
+@Composable
+fun MyBadyBox() {
+    BadgedBox(
+        modifier = Modifier.padding(20.dp),
+        badge = {
+            Badge(
+                content = {
+                    Text(modifier = Modifier.padding(2.dp), text = "10")
+                },
+                backgroundColor = Color.Black,
+                contentColor = Color.White,
+                modifier = Modifier.padding(2.dp)
+            )
+        },
+    ) {
+        Icon(
+            modifier = Modifier.size(50.dp),
+            imageVector = Icons.Default.Star,
+            contentDescription = "l",
+            tint = Color.Blue
+        )
+    }
+}
+
+@Composable
+fun Card1() {
+    Card(
+        elevation = 12.dp,
+        shape = MaterialTheme.shapes.small,
+        contentColor = Color.Yellow,
+        backgroundColor = Color.Red,
+        border = BorderStroke(5.dp, Color.Black),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = "Coco")
+            Text(text = "Mailo")
+            Text(text = "Tara")
+        }
+    }
+}
+
+@Composable
+fun MyRadioButton1() {
+    Row(modifier = Modifier.fillMaxSize()) {
+        RadioButton(
+            selected = true, enabled = false, onClick = { }, colors = RadioButtonDefaults.colors(
+                selectedColor = Color.Red,
+                unselectedColor = Color.Cyan,
+                disabledColor = Color.Green
+            )
+        )
+        Text(text = "Coco")
+    }
+}
+
+@Composable
+fun MyListRadioButton(name: String, onItemSelected: (String) -> Unit) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            RadioButton(selected = name == "Ejemplo 1", onClick = { onItemSelected("Ejemplo 1") })
+            Text(text = "Ejemplo 1")
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            RadioButton(selected = name == "Ejemplo 2", onClick = { onItemSelected("Ejemplo 2") })
+            Text(text = "Ejemplo 2")
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            RadioButton(selected = name == "Ejemplo 3", onClick = { onItemSelected("Ejemplo 3") })
+            Text(text = "Ejemplo 3")
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            RadioButton(selected = name == "Ejemplo 4", onClick = { onItemSelected("Ejemplo 4") })
+            Text(text = "Ejemplo 4")
+        }
+    }
+}
+
+@Composable
+fun MyTrisStatusCheckBox() {
+    var status by rememberSaveable { mutableStateOf(ToggleableState.Off) }
+    TriStateCheckbox(state = status, onClick = {
+        status = when (status) {
+            ToggleableState.On -> {
+                ToggleableState.Off
+            }
+            ToggleableState.Off -> ToggleableState.Indeterminate
+            ToggleableState.Indeterminate -> ToggleableState.On
+        }
+    })
+}
+
+@Composable
+fun getOptions(titles: List<String>): List<CheckInfo> {
+    return titles.map {
+        var status by rememberSaveable { mutableStateOf(false) }
+        CheckInfo(
+            title = "Coco",
+            selected = status,
+            onCheckedChange = { status = it })
+    }
+}
+
+@Composable
+fun MyCheckBoxWithText1(checkInfo: CheckInfo) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Checkbox(
+            checked = checkInfo.selected,
+            onCheckedChange = { checkInfo.onCheckedChange(!checkInfo.selected) })
+        Text(text = checkInfo.title)
+    }
+}
+
+@Composable
+fun MyCheckBoxWithText2() {
+    var state by rememberSaveable { mutableStateOf(false) }
+    Row(modifier = Modifier.padding(7.dp), verticalAlignment = Alignment.CenterVertically) {
+        Checkbox(checked = state, onCheckedChange = { state = !state })
+        Text(text = "Ejemplo1")
+    }
+}
+
+@Composable
+fun MyCheckBox1() {
+    var state by rememberSaveable { mutableStateOf(false) }
+    Checkbox(
+        checked = state, onCheckedChange = { state = !state },
+        enabled = true,
+        colors = CheckboxDefaults.colors(
+            checkedColor = Color.Red,
+            uncheckedColor = Color.Cyan,
+            checkmarkColor = Color.Yellow
+        )
+    )
 }
 
 @Composable
