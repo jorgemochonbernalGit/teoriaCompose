@@ -1,7 +1,5 @@
 package teoria.compose
 
-
-import android.transition.Slide
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.RangeSlider
@@ -39,15 +37,15 @@ fun SliderAvanzado() {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MyRangeSlider() {
-    var currentPage by remember { mutableStateOf(0f..10f) }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        var currentRange by remember { mutableStateOf(0f..10f) }
+        var currentPage by remember { mutableStateOf(0f..10f) }
         RangeSlider(
-            values = currentRange,
-            onValueChange = { currentRange = it },
-            valueRange = 0f..40f,
+            values = currentPage,
+            onValueChange = { currentPage = it },
+            valueRange = 0f..10f,
             steps = 9
         )
+        Text(text = "Valor inferior ${currentPage.start}")
+        Text(text = "Valor superior ${currentPage.endInclusive}")
     }
-    Text(text = currentPage.toString())
 }
